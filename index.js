@@ -23,18 +23,15 @@ async function getMissingCard(key) {
 app.get('/card_add', async (req, res) => {
     const  key = 'user_id:' + req.query.id
     let missingCard = ''
-    while (true){
+    let result = 0
+   do{
         missingCard = await getMissingCard(key);
         if(missingCard === undefined){
             res.send({id: "ALL CARDS"})
             return
         }
         result = await client.ZADD(key, {score: 0, value: JSON.stringify(missingCard)}, 'NX')
-        if(result === 0){
-            continue
-        }
-        break
-    }
+    } while (result === 0)
     res.send(missingCard)
 })
 
